@@ -37,7 +37,7 @@ export async function GET(request: Request) {
         units: number;
       }) => {
         try {
-          await prisma.$transaction(async (tx) => {
+          await prisma.$transaction(async (tx: any) => {
             // Decrement reserved units
             await tx.stock.update({
               where: {

@@ -34,7 +34,7 @@ export async function POST(
     }
 
     // Confirm reservation and update stock atomically
-    const updatedReservation = await prisma.$transaction(async (tx) => {
+    const updatedReservation = await prisma.$transaction(async (tx: any) => {
       // Decrement total units and reserved units
       await tx.stock.update({
         where: {

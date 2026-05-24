@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       // Create reservation and update stock atomically
       const expiresAt = addMinutes(new Date(), 10);
 
-      const reservation = await prisma.$transaction(async (tx) => {
+      const reservation = await prisma.$transaction(async (tx: any) => {
         // Increment reserved units
         await tx.stock.update({
           where: {

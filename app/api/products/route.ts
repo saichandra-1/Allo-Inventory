@@ -13,9 +13,9 @@ async function releaseExpiredReservations() {
 
   if (expiredReservations.length > 0) {
     await Promise.all(
-      expiredReservations.map(async (reservation) => {
+      expiredReservations.map(async (reservation: any) => {
         try {
-          await prisma.$transaction(async (tx) => {
+          await prisma.$transaction(async (tx: any) => {
             await tx.stock.update({
               where: {
                 productId_warehouseId: {
@@ -56,12 +56,12 @@ export async function GET() {
       },
     });
 
-    const productsWithAvailability = products.map((product) => ({
+    const productsWithAvailability = products.map((product: any) => ({
       id: product.id,
       name: product.name,
       sku: product.sku,
       description: product.description,
-      warehouses: product.stocks.map((stock) => ({
+      warehouses: product.stocks.map((stock: any) => ({
         warehouseId: stock.warehouseId,
         warehouseName: stock.warehouse.name,
         location: stock.warehouse.location,

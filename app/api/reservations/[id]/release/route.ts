@@ -27,7 +27,7 @@ export async function POST(
     }
 
     // Release reservation and update stock atomically
-    const updatedReservation = await prisma.$transaction(async (tx) => {
+    const updatedReservation = await prisma.$transaction(async (tx: any) => {
       // Decrement reserved units
       await tx.stock.update({
         where: {
