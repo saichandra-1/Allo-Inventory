@@ -30,7 +30,12 @@ export async function GET(request: Request) {
 
     // Release each expired reservation
     const results = await Promise.all(
-      expiredReservations.map(async (reservation) => {
+      expiredReservations.map(async (reservation: {
+        id: string;
+        productId: string;
+        warehouseId: string;
+        units: number;
+      }) => {
         try {
           await prisma.$transaction(async (tx) => {
             // Decrement reserved units
