@@ -8,7 +8,7 @@ E-commerce platforms face a critical race condition: during checkout, payment ca
 
 ## 🚀 Live Demo
 
-**Deployed URL:** [Your Vercel URL here]
+**Deployed URL:** https://allo-inventory-lime.vercel.app/
 
 ## ✨ Features
 
