@@ -180,43 +180,42 @@ Release a reservation early (payment failed/cancelled).
 
 ## 🔄 How Reservation Expiry Works
 
-### Production (Vercel Cron)
+### Production (Lazy Cleanup)
 
-The system uses Vercel Cron Jobs to automatically release expired reservations:
-
-**Configuration:** `vercel.json`
-```json
-{
-  "crons": [
-    {
-      "path": "/api/cron/expire-reservations",
-      "schedule": "0 * * * *"
-    }
-  ]
-}
-```
-
-**Schedule:** Runs **every hour** (Vercel Hobby plan limitation)
+Due to Vercel Hobby plan limitations (cron jobs limited to once per day), the system uses **lazy cleanup** instead:
 
 **How it works:**
-1. Cron job runs **every hour**
-2. Finds all PENDING reservations where `expiresAt < now()`
-3. For each expired reservation:
-   - Decrements `reservedUnits` in stock table
-   - Updates reservation status to "RELEASED"
-4. Stock becomes available again for other customers
+1. When users visit the products page (`GET /api/products`)
+2. The endpoint automatically checks for expired PENDING reservations
+3. Releases them immediately (decrements `reservedUnits`, sets status to "RELEASED")
+4. Returns updated stock availability
 
-**Security:** The cron endpoint is protected with `CRON_SECRET` header.
+**Benefits:**
+- ✅ No cron job needed (works on free tier)
+- ✅ Stock is released as soon as someone views products after expiry
+- ✅ Frontend countdown still prevents confirmation after expiry (410 error)
+- ✅ No stale reservations blocking inventory
+
+**Trade-off:**
+- Expired reservations stay locked until someone visits the products page
+- In practice, this is fine for a demo/low-traffic site
+
+### Alternative: Manual Cron Trigger
+
+The cron endpoint still exists and can be triggered manually or via external services (e.g., cron-job.org):
+
+```bash
+curl -H "Authorization: Bearer your-cron-secret" \
+  https://your-app.vercel.app/api/cron/expire-reservations
+```
 
 ### Local Development
 
-Manually trigger the cron job:
+Same lazy cleanup works locally. Or manually trigger:
 ```bash
 curl -H "Authorization: Bearer your-cron-secret" \
   http://localhost:3000/api/cron/expire-reservations
 ```
-
-Or wait 10 minutes and the frontend will show "EXPIRED" on the countdown timer.
 
 ## 🏗️ Architecture & Design Decisions
 
@@ -333,9 +332,10 @@ POST /api/reservations/{id}/confirm
 
 ### Current Trade-offs
 
-1. **Cron frequency:** Runs every hour on Vercel Hobby plan (Pro plan allows every minute)
-   - Expired reservations may stay locked for up to 1 hour before auto-release
-   - Frontend still shows accurate countdown and prevents confirmation after expiry
+1. **Expiry mechanism:** Uses lazy cleanup (on-read) instead of background cron
+   - Vercel Hobby plan only allows daily cron jobs
+   - Expired reservations released when products page is viewed
+   - Works well for demo/low-traffic scenarios
 2. **Lock timeout:** 5 seconds (balance between safety and user experience)
 3. **No idempotency:** Duplicate requests create duplicate reservations (bonus feature not implemented)
 
