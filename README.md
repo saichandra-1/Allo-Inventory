@@ -376,9 +376,6 @@ allo-inventory/
 ```
 
 
-## 📄 License
-
-MIT
 
 ---
 
