@@ -384,3 +384,5 @@ allo-inventory/
 ---
 
 **Built with ❤️ for Allo Health**
+
+**By Chandra**
