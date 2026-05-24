@@ -375,9 +375,6 @@ allo-inventory/
 └── vercel.json                        # Cron configuration
 ```
 
-## 🤝 Contributing
-
-This is a take-home exercise project. For questions or feedback, please reach out.
 
 ## 📄 License
 
