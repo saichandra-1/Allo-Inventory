@@ -190,14 +190,16 @@ The system uses Vercel Cron Jobs to automatically release expired reservations:
   "crons": [
     {
       "path": "/api/cron/expire-reservations",
-      "schedule": "* * * * *"
+      "schedule": "0 * * * *"
     }
   ]
 }
 ```
 
+**Schedule:** Runs **every hour** (Vercel Hobby plan limitation)
+
 **How it works:**
-1. Cron job runs **every minute**
+1. Cron job runs **every hour**
 2. Finds all PENDING reservations where `expiresAt < now()`
 3. For each expired reservation:
    - Decrements `reservedUnits` in stock table
@@ -331,7 +333,9 @@ POST /api/reservations/{id}/confirm
 
 ### Current Trade-offs
 
-1. **Cron frequency:** Runs every minute (could be more frequent for tighter expiry)
+1. **Cron frequency:** Runs every hour on Vercel Hobby plan (Pro plan allows every minute)
+   - Expired reservations may stay locked for up to 1 hour before auto-release
+   - Frontend still shows accurate countdown and prevents confirmation after expiry
 2. **Lock timeout:** 5 seconds (balance between safety and user experience)
 3. **No idempotency:** Duplicate requests create duplicate reservations (bonus feature not implemented)
 
