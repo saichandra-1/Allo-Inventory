@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const reservation = await prisma.reservation.findUnique({
       where: { id },
@@ -68,7 +68,7 @@ export async function POST(
   } catch (error) {
     console.error('Error confirming reservation:', error);
     return NextResponse.json(
-      { error: 'Failed to confirm reservation' },
+      { error: 'Failed to confirm reservation', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
